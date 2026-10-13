@@ -93,4 +93,4 @@ export default async (request) => {
       error: error.message || "Error al guardar"
     }), { status: 500, headers });
   }
-};
+}; 
