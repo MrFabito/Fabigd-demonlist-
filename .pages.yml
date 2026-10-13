@@ -1,0 +1,29 @@
+
+media: media
+
+content:
+  - name: levels
+    label: Niveles de la Demonlist
+    type: file
+    path: levels.json
+    format: json
+    list: true
+    fields:
+      - name: name
+        label: Nombre del nivel
+        type: string
+        required: true
+      - name: creator
+        label: Creador
+        type: string
+        required: true
+      - name: showcase
+        label: Enlace del showcase
+        type: string
+      - name: verification
+        label: Enlace de verificación
+        type: string
+      - name: position
+        label: Posición en el ranking
+        type: number
+        
