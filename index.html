@@ -11,21 +11,30 @@ body{margin:0;background:#101014;color:#fff;font-family:Arial,sans-serif}
 header{background:#1a1a20;border-bottom:4px solid #e5bd22;padding:28px 16px;text-align:center}
 h1{margin:0;color:#ffd52a;font-size:clamp(27px,6vw,42px)}
 header p{color:#bbb;margin-bottom:0}
-main{max-width:900px;margin:28px auto;padding:0 14px}
+main{max-width:1000px;margin:28px auto;padding:0 14px}
 .banner{background:linear-gradient(120deg,#7e1717,#30151b);border:1px solid #a83b3b;border-radius:12px;padding:20px;margin-bottom:22px}
 .banner h2{margin:0 0 8px}
 .banner p{margin:0;color:#ddd}
 .section-title{border-left:5px solid #ffd52a;padding-left:12px}
-.level{display:flex;align-items:center;gap:14px;background:#1c1c23;border:1px solid #33333d;border-radius:10px;padding:15px;margin:12px 0}
+.level{display:flex;align-items:center;gap:14px;background:#1c1c23;border:1px solid #33333d;border-radius:10px;padding:15px;margin:12px 0;min-width:0}
 .position{font-size:25px;font-weight:bold;color:#ffd52a;min-width:35px;text-align:center}
+.thumb{display:block;width:160px;aspect-ratio:16/9;flex-shrink:0;object-fit:cover;border-radius:7px;background:#303039;border:1px solid #444}
 .info{flex:1;min-width:0}
-.info h3{margin:0 0 6px;overflow-wrap:anywhere}
+.info h3{margin:0 0 6px;overflow-wrap:anywhere;font-size:18px}
 .info p{margin:0;color:#aaa;font-size:14px}
 .links{display:flex;gap:8px;flex-wrap:wrap}
 a{color:#ffd52a;text-decoration:none}
 .links a{background:#303039;padding:9px 11px;border-radius:7px;font-size:13px}
+.links a:hover{background:#454550}
 .empty{padding:26px;text-align:center;color:#bbb;background:#1c1c23;border-radius:10px}
 footer{text-align:center;color:#777;padding:30px 12px;font-size:13px}
+@media(max-width:600px){
+ .level{gap:10px;padding:11px;flex-wrap:wrap}
+ .position{min-width:27px;font-size:21px}
+ .thumb{width:calc(100% - 42px);max-width:230px}
+ .info{flex-basis:100%;order:3}
+ .links{width:100%;order:4}
+}
 </style>
 </head>
 <body>
@@ -44,52 +53,124 @@ footer{text-align:center;color:#777;padding:30px 12px;font-size:13px}
 </div>
 </main>
 <footer>FabiGD Demonlist · Comunidad independiente de Geometry Dash</footer>
+
 <script>
+function getYouTubeId(url){
+  try{
+    const parsed=new URL(url);
+    const host=parsed.hostname.replace(/^www\./,"").toLowerCase();
+
+    if(host==="youtu.be"){
+      return parsed.pathname.split("/").filter(Boolean)[0]||null;
+    }
+
+    if(host==="youtube.com"||host==="m.youtube.com"||host==="music.youtube.com"){
+      if(parsed.pathname==="/watch"){
+        return parsed.searchParams.get("v");
+      }
+
+      const parts=parsed.pathname.split("/").filter(Boolean);
+
+      if(["embed","shorts","live"].includes(parts[0])){
+        return parts[1]||null;
+      }
+    }
+  }catch(e){}
+
+  return null;
+}
+
+function makeThumbnail(url){
+  const id=getYouTubeId(url);
+  if(!id||!/^[a-zA-Z0-9_-]{11}$/.test(id)) return null;
+
+  const img=document.createElement("img");
+  img.className="thumb";
+  img.alt="Portada del vídeo de YouTube";
+  img.loading="lazy";
+  img.src="https://img.youtube.com/vi/"+id+"/maxresdefault.jpg";
+
+  img.onerror=function(){
+    if(!this.dataset.fallback){
+      this.dataset.fallback="1";
+      this.src="https://img.youtube.com/vi/"+id+"/hqdefault.jpg";
+    }else{
+      this.style.display="none";
+    }
+  };
+
+  return img;
+}
+
 fetch("levels.json")
 .then(response=>{
-if(!response.ok) throw new Error("Lista aún no disponible");
-return response.json();
+  if(!response.ok) throw new Error("Lista aún no disponible");
+  return response.json();
 })
 .then(levels=>{
-const container=document.getElementById("levels");
-container.replaceChildren();
-if(!Array.isArray(levels)||levels.length===0){
-container.innerHTML='<div class="empty">Todavía no hay niveles publicados.</div>';
-return;
-}
-levels.sort((a,b)=>(a.position||9999)-(b.position||9999));
-levels.forEach(level=>{
-const card=document.createElement("article");
-card.className="level";
-const pos=document.createElement("div");
-pos.className="position";
-pos.textContent="#"+(level.position||"?");
-const info=document.createElement("div");
-info.className="info";
-const name=document.createElement("h3");
-name.textContent=level.name||"Nivel sin nombre";
-const creator=document.createElement("p");
-creator.textContent="Creador: "+(level.creator||"Desconocido");
-info.append(name,creator);
-const links=document.createElement("div");
-links.className="links";
-[["Showcase",level.showcase],["Verificación",level.verification]].forEach(([label,url])=>{
-if(url && /^https:\/\/\S+/i.test(url)){
-const a=document.createElement("a");
-a.href=url;
-a.target="_blank";
-a.rel="noopener noreferrer";
-a.textContent=label;
-links.append(a);
-}
-});
-card.append(pos,info,links);
-container.append(card);
-});
+  const container=document.getElementById("levels");
+  container.replaceChildren();
+
+  if(!Array.isArray(levels)||levels.length===0){
+    container.innerHTML='<div class="empty">Todavía no hay niveles publicados.</div>';
+    return;
+  }
+
+  levels.sort((a,b)=>(a.position||9999)-(b.position||9999));
+
+  levels.forEach(level=>{
+    const card=document.createElement("article");
+    card.className="level";
+
+    const pos=document.createElement("div");
+    pos.className="position";
+    pos.textContent="#"+(level.position||"?");
+
+    const info=document.createElement("div");
+    info.className="info";
+
+    const name=document.createElement("h3");
+    name.textContent=level.name||"Nivel sin nombre";
+
+    const creator=document.createElement("p");
+    creator.textContent="Creador: "+(level.creator||"Desconocido");
+
+    info.append(name,creator);
+
+    const links=document.createElement("div");
+    links.className="links";
+
+    if(level.showcase && /^https:\/\/\S+/i.test(level.showcase)){
+      const thumbnail=makeThumbnail(level.showcase);
+      if(thumbnail) card.append(pos,thumbnail,info);
+      else card.append(pos,info);
+
+      const a=document.createElement("a");
+      a.href=level.showcase;
+      a.target="_blank";
+      a.rel="noopener noreferrer";
+      a.textContent="▶ Showcase";
+      links.append(a);
+    }else{
+      card.append(pos,info);
+    }
+
+    if(level.verification && /^https:\/\/\S+/i.test(level.verification)){
+      const a=document.createElement("a");
+      a.href=level.verification;
+      a.target="_blank";
+      a.rel="noopener noreferrer";
+      a.textContent="Verificación";
+      links.append(a);
+    }
+
+    card.append(links);
+    container.append(card);
+  });
 })
 .catch(()=>{
-document.getElementById("levels").innerHTML=
-'<div class="empty">¡Estamos preparando el ranking!</div>';
+  document.getElementById("levels").innerHTML=
+    '<div class="empty">¡Estamos preparando el ranking!</div>';
 });
 </script>
 </body>
