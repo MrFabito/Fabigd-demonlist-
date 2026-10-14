@@ -3,471 +3,337 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FabiGD Demonlist Editor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FabiGD Demonlist — Editor</title>
 <style>
-:root {
-  --bg: #101114;
-  --panel: #1b1d23;
-  --yellow: #ffd52a;
-  --red: #ff4141;
-  --text: #f4f4f5;
-  --muted: #a5a7b0;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  padding: 20px;
-  background: var(--bg);
-  color: var(--text);
-  font-family: Arial, sans-serif;
-}
-main { max-width: 950px; margin: auto; }
-header {
-  text-align: center;
-  padding: 22px 10px;
-  border-bottom: 3px solid var(--yellow);
-  margin-bottom: 20px;
-}
-h1 { margin: 0 0 8px; }
-h1 span { color: var(--yellow); }
-p { color: var(--muted); line-height: 1.5; }
-.panel {
-  background: var(--panel);
-  border: 1px solid #343640;
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
-}
-button, input {
-  font: inherit;
-  border-radius: 7px;
-  padding: 11px;
-}
-button {
-  cursor: pointer;
-  border: 0;
-  font-weight: bold;
-  background: var(--yellow);
-  color: #151515;
-}
-button:hover { filter: brightness(1.1); }
-button.secondary {
-  background: #343640;
-  color: white;
-}
-button.danger { background: var(--red); color: white; }
-input {
-  width: 100%;
-  color: white;
-  background: #101114;
-  border: 1px solid #424550;
-  margin: 5px 0 12px;
-}
-label { font-size: 14px; font-weight: bold; }
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-}
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 14px;
-}
-.level {
-  display: grid;
-  grid-template-columns: 54px minmax(0, 1fr);
-  gap: 12px;
-  align-items: center;
-  border: 1px solid #343640;
-  background: #15161b;
-  padding: 12px;
-  border-radius: 10px;
-  margin: 10px 0;
-}
-.rank {
-  font-size: 22px;
-  font-weight: bold;
-  color: var(--yellow);
-  text-align: center;
-}
-.level h3 { margin: 0 0 5px; overflow-wrap: anywhere; }
-.level p { margin: 4px 0; font-size: 13px; overflow-wrap: anywhere; }
-.level-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
-.level-actions button { padding: 8px 10px; }
-#status { white-space: pre-wrap; }
-@media(max-width: 580px) {
-  body { padding: 12px; }
-  .form-grid { grid-template-columns: 1fr; }
-  .level { grid-template-columns: 40px minmax(0, 1fr); padding: 9px; }
-}
+*{box-sizing:border-box}
+body{margin:0;background:#10131c;color:#f4f5fa;font-family:Arial,sans-serif}
+header{padding:22px;background:#20263a;border-bottom:3px solid #f5c400}
+h1{margin:0;font-size:25px}
+header p{color:#b9c0d2;margin-bottom:0}
+main{max-width:950px;margin:auto;padding:18px}
+.panel,.level{background:#1c2130;border:1px solid #343b50;border-radius:12px;padding:16px;margin-bottom:16px}
+h2{font-size:18px;margin-top:0}
+label{display:block;font-size:13px;color:#c5cbe0;margin:12px 0 6px}
+input{width:100%;padding:11px;border-radius:7px;border:1px solid #444d65;background:#101522;color:white}
+button{border:0;border-radius:7px;padding:11px 14px;font-weight:bold;cursor:pointer;margin:5px 4px 0 0}
+.primary{background:#f5c400;color:#171717}
+.secondary{background:#343d54;color:white}
+.danger{background:#9e3342;color:white}
+.publish{background:#26b879;color:#071b12;width:100%;padding:14px;font-size:16px;margin-top:14px}
+.level{display:grid;grid-template-columns:145px 1fr;gap:15px}
+.thumb{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;background:#080a10}
+.level h3{margin:0 0 8px}
+.level p{color:#c1c7d8;font-size:13px;overflow-wrap:anywhere}
+.actions{margin-top:10px}
+#status{white-space:pre-wrap;font-size:14px;margin-top:12px;color:#e6dca9}
+.note{font-size:13px;line-height:1.5;color:#b9c0d2}
+@media(max-width:520px){.level{grid-template-columns:1fr}.thumb{max-width:100%}}
 </style>
 </head>
 <body>
-<main>
 <header>
-  <h1><span>FabiGD</span> DEMONLIST</h1>
-  <p>Editor privado · Gestiona el ranking de tus niveles</p>
+  <h1>🟨 FABIGD DEMONLIST 🟥</h1>
+  <p>Editor privado · Administración de niveles</p>
 </header>
 
-<section class="panel">
-  <h2>📁 Archivo de niveles</h2>
-  <p>Importa tu archivo levels.json para editar los niveles. Al terminar, descarga el archivo actualizado y reemplaza el anterior en GitHub.</p>
-  <div class="actions">
-    <button onclick="document.getElementById('file').click()">Importar levels.json</button>
-    <button class="secondary" onclick="downloadJSON()">Descargar levels.json</button>
-    <button class="secondary" onclick="loadExample()">Cargar ejemplo</button>
-    <button id="publishButton" onclick="updatePublic()">🚀 Actualizar Demonlist pública</button>
-  </div>
-  <input id="file" type="file" accept=".json,application/json" hidden>
-  <p id="status">Todavía no has importado ningún archivo.</p>
-</section>
+<main>
+  <section class="panel">
+    <h2>🔗 Conexión con GitHub</h2>
+    <p class="note">Introduce el repositorio que contiene levels.json. El token se mantiene en memoria mientras esta página está abierta; no se guarda en el archivo.</p>
 
-<section class="panel" id="editor">
-  <h2 id="formTitle">➕ Añadir nivel</h2>
-  <form id="levelForm">
-    <div class="form-grid">
-      <div>
-        <label for="name">Nombre del nivel *</label>
-        <input id="name" required maxlength="120" placeholder="Nombre del nivel">
-      </div>
-      <div>
-        <label for="creator">Creador *</label>
-        <input id="creator" required maxlength="120" placeholder="Nombre del creador">
-      </div>
-      <div>
-        <label for="showcase">Enlace del showcase</label>
-        <input id="showcase" type="url" placeholder="https://youtu.be/...">
-      </div>
-      <div>
-        <label for="verification">Enlace de verificación</label>
-        <input id="verification" type="url" placeholder="https://youtu.be/...">
-      </div>
-      <div>
-        <label for="position">Posición deseada</label>
-        <input id="position" type="number" min="1" step="1" value="1">
-      </div>
-    </div>
-    <div class="actions">
-      <button type="submit" id="saveButton">Añadir nivel</button>
-      <button type="button" class="secondary" onclick="resetForm()">Cancelar</button>
-    </div>
-  </form>
-</section>
+    <label>Usuario u organización</label>
+    <input id="owner" value="MrFabito" autocomplete="off">
 
-<section class="panel">
-  <h2>🏆 Ranking de niveles</h2>
-  <p>Usa las flechas para mover los niveles. Las posiciones se reorganizan automáticamente.</p>
-  <p id="count">Niveles: 0</p>
-  <div id="levels"></div>
-</section>
+    <label>Nombre exacto del repositorio</label>
+    <input id="repo" value="Fabigd-demonlist" autocomplete="off">
+
+    <label>Rama</label>
+    <input id="branch" value="main" autocomplete="off">
+
+    <label>Ruta del archivo de niveles</label>
+    <input id="path" value="levels.json" autocomplete="off">
+
+    <label>Token de GitHub</label>
+    <input id="token" type="password" placeholder="Pega tu token aquí" autocomplete="off">
+
+    <button class="secondary" onclick="loadLevels()">Cargar niveles de GitHub</button>
+    <p class="note">Usa un token con permiso Contents: Read and write, limitado a este repositorio. No lo compartas ni lo pegues en el código.</p>
+  </section>
+
+  <section class="panel">
+    <h2>➕ Añadir nivel</h2>
+    <label>Nombre del nivel</label>
+    <input id="name" placeholder="Nombre del nivel">
+
+    <label>Creador</label>
+    <input id="creator" placeholder="Nombre del creador">
+
+    <label>Enlace del showcase de YouTube</label>
+    <input id="showcase" placeholder="https://youtu.be/...">
+
+    <label>Posición en la Demonlist</label>
+    <input id="position" type="number" min="1" value="1">
+
+    <button class="primary" onclick="addLevel()">Añadir nivel</button>
+  </section>
+
+  <section class="panel">
+    <h2>📋 Niveles actuales</h2>
+    <div id="levels"></div>
+    <button class="secondary" onclick="render()">Actualizar vista</button>
+    <button class="publish" onclick="publish()">🚀 PUBLICAR CAMBIOS EN GITHUB</button>
+    <div id="status" role="status"></div>
+  </section>
 </main>
 
 <script>
-"use strict";
+const initialLevels = [
+  {name:"Loudly club ",creator:"MaxynGD",showcase:"https://youtu.be/fa-XJ1KzXXc?si=_5Ev6JyPOGMCsefY",position:1},
+  {name:"Solaf",creator:"Dami02888",showcase:"https://youtu.be/BlkrliVFYBI?si=Cv7gsOLZMe2wK8X_",position:3},
+  {name:"When You find me ",creator:"FabiGD2013",showcase:"https://youtu.be/m47dZB_kVew?si=dPzfOsadCcgPOgtb",position:5},
+  {name:"GDcraft ",creator:"ErickGD2004",showcase:"https://youtu.be/b6pRoE_UJZ8?si=R5AZHlUjoekuJlDW",position:6},
+  {name:"Speed of light",creator:"FabiGD2013",showcase:"https://youtu.be/F1kh1qej7tM?si=EAkTT9J2mHSkNiF-",position:4},
+  {name:"Every madness ",creator:"FabiGD2013",showcase:"https://youtu.be/J9C3NqprnYg?si=N9BfGWPhYfbr8I4o",position:2}
+];
 
-let levels = [];
-let editingIndex = -1;
+let levels = initialLevels.map(x => ({...x}));
+let fileSha = null;
+let loadedFromGitHub = false;
 
 const $ = id => document.getElementById(id);
+const status = message => $("status").textContent = message;
 
-function normalize() {
-  levels.forEach((level, index) => {
-    level.position = index + 1;
-  });
+function config(){
+  const owner = $("owner").value.trim();
+  const repo = $("repo").value.trim();
+  const branch = $("branch").value.trim();
+  const path = $("path").value.trim();
+  const token = $("token").value.trim();
+
+  if(!owner || !repo || !branch || !path || !token)
+    throw new Error("Completa los datos de GitHub y pega tu token.");
+
+  return {owner,repo,branch,path,token};
 }
 
-function render() {
-  normalize();
-  $("count").textContent = "Niveles: " + levels.length;
-  const container = $("levels");
-  container.replaceChildren();
+function apiUrl(c){
+  return "https://api.github.com/repos/" +
+    encodeURIComponent(c.owner) + "/" +
+    encodeURIComponent(c.repo) + "/contents/" +
+    c.path.split("/").map(encodeURIComponent).join("/") +
+    "?ref=" + encodeURIComponent(c.branch);
+}
 
-  if (!levels.length) {
-    const message = document.createElement("p");
-    message.textContent = "No hay niveles. Importa levels.json o añade uno arriba.";
-    container.appendChild(message);
+async function githubRequest(url, options){
+  const response = await fetch(url, options);
+  const data = await response.json().catch(() => ({}));
+
+  if(!response.ok){
+    throw new Error(data.message || ("Error de GitHub: " + response.status));
+  }
+  return data;
+}
+
+async function loadLevels(){
+  try{
+    const c = config();
+    status("Cargando niveles desde GitHub...");
+
+    const data = await githubRequest(apiUrl(c), {
+      headers:{
+        "Accept":"application/vnd.github+json",
+        "Authorization":"Bearer " + c.token,
+        "X-GitHub-Api-Version":"2022-11-28"
+      }
+    });
+
+    const decoded = decodeURIComponent(escape(atob(data.content.replace(/\s/g,""))));
+    const parsed = JSON.parse(decoded);
+
+    if(!Array.isArray(parsed)) throw new Error("El JSON no contiene una lista de niveles.");
+
+    levels = parsed;
+    fileSha = data.sha;
+    loadedFromGitHub = true;
+    render();
+    status("✅ Niveles cargados. Ya puedes editarlos y publicar.");
+  }catch(e){
+    status("❌ " + e.message);
+  }
+}
+
+function videoId(url){
+  try{
+    const u = new URL(url);
+    if(u.hostname === "youtu.be") return u.pathname.slice(1).split("/")[0];
+    if(u.hostname.includes("youtube.com")){
+      if(u.pathname === "/watch") return u.searchParams.get("v");
+      const match = u.pathname.match(/^\/(?:embed|shorts)\/([^/?]+)/);
+      return match ? match[1] : null;
+    }
+  }catch(e){}
+  return null;
+}
+
+function escapeHtml(value){
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[ch]));
+}
+
+function render(){
+  const container = $("levels");
+  container.innerHTML = "";
+
+  levels.sort((a,b) => Number(a.position)-Number(b.position));
+
+  if(!levels.length){
+    container.textContent = "No hay niveles. Puedes añadir uno arriba.";
     return;
   }
 
-  levels.forEach((level, index) => {
+  levels.forEach((level,index) => {
+    const id = videoId(level.showcase || "");
     const card = document.createElement("article");
     card.className = "level";
 
-    const rank = document.createElement("div");
-    rank.className = "rank";
-    rank.textContent = "#" + (index + 1);
-    card.appendChild(rank);
+    const img = document.createElement("img");
+    img.className = "thumb";
+    img.alt = "Portada de " + (level.name || "nivel");
+    img.src = id ? "https://i.ytimg.com/vi/" + encodeURIComponent(id) + "/hqdefault.jpg" : "";
+    img.onerror = () => { img.alt = "Portada no disponible"; };
 
     const details = document.createElement("div");
-    const title = document.createElement("h3");
-    title.textContent = level.name || "Sin nombre";
-    details.appendChild(title);
+    details.innerHTML = `
+      <h3>#${escapeHtml(level.position)} — ${escapeHtml(level.name)}</h3>
+      <p>Creador: ${escapeHtml(level.creator)}</p>
+      <p>Showcase: ${escapeHtml(level.showcase)}</p>
+      <div class="actions">
+        <button class="secondary" data-action="up">↑ Subir</button>
+        <button class="secondary" data-action="down">↓ Bajar</button>
+        <button class="secondary" data-action="edit">Editar</button>
+        <button class="danger" data-action="delete">Eliminar</button>
+      </div>`;
 
-    const creator = document.createElement("p");
-    creator.textContent = "Creador: " + (level.creator || "Desconocido");
-    details.appendChild(creator);
+    details.querySelector('[data-action="up"]').onclick = () => move(index,-1);
+    details.querySelector('[data-action="down"]').onclick = () => move(index,1);
+    details.querySelector('[data-action="edit"]').onclick = () => editLevel(index);
+    details.querySelector('[data-action="delete"]').onclick = () => deleteLevel(index);
 
-    if (level.showcase) {
-      details.appendChild(makeLink("▶ Showcase", level.showcase));
-    }
-    if (level.verification) {
-      details.appendChild(makeLink("✓ Verificación", level.verification));
-    }
-
-    const buttons = document.createElement("div");
-    buttons.className = "level-actions";
-
-    buttons.appendChild(makeButton("⬆️", "secondary", () => move(index, -1), index === 0));
-    buttons.appendChild(makeButton("⬇️", "secondary", () => move(index, 1), index === levels.length - 1));
-    buttons.appendChild(makeButton("✏️ Editar", "secondary", () => editLevel(index)));
-    buttons.appendChild(makeButton("🗑️ Eliminar", "danger", () => deleteLevel(index)));
-
-    details.appendChild(buttons);
-    card.appendChild(details);
-    container.appendChild(card);
+    card.append(img,details);
+    container.append(card);
   });
 }
 
-function makeButton(text, className, callback, disabled = false) {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.textContent = text;
-  button.className = className;
-  button.disabled = disabled;
-  if (disabled) button.style.opacity = "0.45";
-  button.addEventListener("click", callback);
-  return button;
+function normalizePositions(){
+  levels.sort((a,b) => Number(a.position)-Number(b.position));
+  levels.forEach((level,index) => level.position = index+1);
 }
 
-function makeLink(text, url) {
-  const paragraph = document.createElement("p");
-  const link = document.createElement("a");
-  link.textContent = text;
-  link.href = url;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  link.style.color = "var(--yellow)";
-  paragraph.appendChild(link);
-  return paragraph;
-}
-
-function move(index, direction) {
-  const target = index + direction;
-  if (target < 0 || target >= levels.length) return;
-
-  [levels[index], levels[target]] = [levels[target], levels[index]];
-  normalize();
-  render();
-  $("status").textContent = "Ranking actualizado. Descarga levels.json para guardar los cambios.";
-}
-
-function resetForm() {
-  editingIndex = -1;
-  $("levelForm").reset();
-  $("position").value = Math.max(1, levels.length + 1);
-  $("formTitle").textContent = "➕ Añadir nivel";
-  $("saveButton").textContent = "Añadir nivel";
-}
-
-$("levelForm").addEventListener("submit", event => {
-  event.preventDefault();
-
+function addLevel(){
   const name = $("name").value.trim();
   const creator = $("creator").value.trim();
   const showcase = $("showcase").value.trim();
-  const verification = $("verification").value.trim();
-  const desiredPosition = Math.max(
-    1,
-    Math.min(levels.length + (editingIndex === -1 ? 1 : 0),
-      Number.parseInt($("position").value, 10) || 1)
-  );
+  const position = Number($("position").value);
 
-  if (!name || !creator) {
-    alert("Escribe el nombre del nivel y su creador.");
+  if(!name || !creator || !showcase || !Number.isInteger(position) || position < 1){
+    status("Completa nombre, creador, enlace y posición válida.");
+    return;
+  }
+  if(!videoId(showcase)){
+    status("El enlace no parece ser un video válido de YouTube.");
     return;
   }
 
-  if (!validURL(showcase) || !validURL(verification)) {
-    alert("Los enlaces deben ser direcciones web válidas que empiecen por http:// o https://.");
-    return;
-  }
-
-  const updated = { name, creator, showcase, verification };
-
-  if (editingIndex !== -1) {
-    const oldIndex = editingIndex;
-    levels.splice(oldIndex, 1);
-    levels.splice(Math.min(desiredPosition - 1, levels.length), 0, updated);
-  } else {
-    levels.splice(Math.min(desiredPosition - 1, levels.length), 0, updated);
-  }
-
-  normalize();
+  levels.push({name,creator,showcase,position});
+  normalizePositions();
+  $("name").value = "";
+  $("creator").value = "";
+  $("showcase").value = "";
+  $("position").value = levels.length+1;
   render();
-  resetForm();
-  $("status").textContent = "Cambios aplicados. Descarga levels.json para guardarlos en GitHub.";
-});
+  status("Nivel añadido al editor. Pulsa Publicar cambios para guardarlo en GitHub.");
+}
 
-function validURL(value) {
-  if (!value) return true;
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" || url.protocol === "http:";
-  } catch {
-    return false;
+function editLevel(index){
+  const old = levels[index];
+  const name = prompt("Nombre del nivel:",old.name);
+  if(name === null) return;
+  const creator = prompt("Creador:",old.creator);
+  if(creator === null) return;
+  const showcase = prompt("Enlace de YouTube:",old.showcase);
+  if(showcase === null) return;
+  if(!name.trim() || !creator.trim() || !videoId(showcase.trim())){
+    status("Datos inválidos. Revisa el nombre, creador y enlace de YouTube.");
+    return;
   }
-}
-
-function editLevel(index) {
-  const level = levels[index];
-  editingIndex = index;
-
-  $("name").value = level.name || "";
-  $("creator").value = level.creator || "";
-  $("showcase").value = level.showcase || "";
-  $("verification").value = level.verification || "";
-  $("position").value = index + 1;
-  $("formTitle").textContent = "✏️ Editar nivel";
-  $("saveButton").textContent = "Guardar cambios";
-
-  $("editor").scrollIntoView({ behavior: "smooth" });
-}
-
-function deleteLevel(index) {
-  if (!confirm('¿Seguro que quieres eliminar "' + levels[index].name + '"?')) return;
-  levels.splice(index, 1);
-  normalize();
+  levels[index] = {...old,name:name.trim(),creator:creator.trim(),showcase:showcase.trim()};
   render();
-  if (editingIndex === index) resetForm();
-  $("status").textContent = "Nivel eliminado. Descarga levels.json para guardar los cambios.";
+  status("Cambios hechos en el editor. Pulsa Publicar cambios para guardarlos.");
 }
 
-$("file").addEventListener("change", async event => {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  try {
-    const parsed = JSON.parse(await file.text());
-    if (!Array.isArray(parsed)) throw new Error("El JSON debe contener una lista de niveles.");
-
-    levels = parsed.map(level => ({
-      name: String(level.name || ""),
-      creator: String(level.creator || ""),
-      showcase: String(level.showcase || ""),
-      verification: String(level.verification || ""),
-      position: Number(level.position) || 999999
-    }));
-
-    levels.sort((a, b) => a.position - b.position);
-    normalize();
-    resetForm();
-    render();
-    $("status").textContent = "Importado: " + file.name + ". Revisa el ranking y descarga cuando termines.";
-  } catch (error) {
-    alert("No se pudo importar el archivo: " + error.message);
-  }
-
-  event.target.value = "";
-});
-
-function downloadJSON() {
-  normalize();
-
-  const output = levels.map(level => ({
-    name: level.name,
-    creator: level.creator,
-    showcase: level.showcase,
-    verification: level.verification,
-    position: level.position
-  }));
-
-  const blob = new Blob([JSON.stringify(output, null, 2)], {
-    type: "application/json"
-  });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "levels.json";
-  link.click();
-  URL.revokeObjectURL(url);
-
-  $("status").textContent = "Archivo levels.json descargado. Súbelo a tu repositorio para actualizar los datos.";
+function move(index,delta){
+  const target = index+delta;
+  if(target < 0 || target >= levels.length) return;
+  normalizePositions();
+  [levels[index],levels[target]] = [levels[target],levels[index]];
+  normalizePositions();
+  render();
+  status("Orden actualizado. Pulsa Publicar cambios para guardarlo.");
 }
 
-async function updatePublic() {
-  if (!levels.length) {
-    alert("Primero importa levels.json o añade al menos un nivel.");
-    return;
-  }
+function deleteLevel(index){
+  if(!confirm("¿Seguro que quieres eliminar este nivel?")) return;
+  levels.splice(index,1);
+  normalizePositions();
+  render();
+  status("Nivel eliminado del editor. Pulsa Publicar cambios para guardarlo.");
+}
 
-  const password = prompt("Introduce tu EDITOR_PASSWORD de Netlify. No uses aquí tu token de GitHub:");
-  if (password === null) return;
-  if (!password.trim()) {
-    alert("No has escrito la contraseña.");
-    return;
-  }
+async function publish(){
+  try{
+    const c = config();
 
-  const button = $("publishButton");
-  button.disabled = true;
-  button.textContent = "⏳ Actualizando...";
-  $("status").textContent = "Enviando niveles a Netlify…";
-
-  try {
-    normalize();
-    const response = await fetch(
-      "https://stalwart-cannoli-a7bded.netlify.app/.netlify/functions/save-levels",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + password
-        },
-        body: JSON.stringify(levels.map((level, index) => ({
-          name: String(level.name || ""),
-          creator: String(level.creator || ""),
-          showcase: String(level.showcase || ""),
-          verification: String(level.verification || ""),
-          position: index + 1
-        }))
-      }
-    );
-
-    const result = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(result.error || ("Error HTTP " + response.status));
+    if(!loadedFromGitHub || !fileSha){
+      status("Primero pulsa «Cargar niveles de GitHub». Así evitamos sobrescribir datos sin comprobarlos.");
+      return;
     }
 
-    $("status").textContent = "✅ Niveles enviados a GitHub. Netlify debe publicar los cambios automáticamente; espera a que el despliegue termine.";
-    alert("¡Niveles enviados! Espera a que Netlify termine el despliegue.");
-  } catch (error) {
-    $("status").textContent = "❌ No se pudo actualizar la pública: " + error.message;
-    alert("No se pudo actualizar. Comprueba que la función esté desplegada, que EDITOR_PASSWORD sea correcta y que la función guarde en public/levels.json. Detalle: " + error.message);
-  } finally {
-    button.disabled = false;
-    button.textContent = "🚀 Actualizar Demonlist pública";
+    if(!confirm("Se guardarán los niveles actuales en levels.json en GitHub. ¿Continuar?")) return;
+
+    status("Publicando levels.json en GitHub...");
+
+    const content = btoa(unescape(encodeURIComponent(
+      JSON.stringify(levels.sort((a,b)=>Number(a.position)-Number(b.position)),null,2) + "\n"
+    )));
+
+    const url = apiUrl(c).split("?ref=")[0];
+
+    const result = await githubRequest(url,{
+      method:"PUT",
+      headers:{
+        "Accept":"application/vnd.github+json",
+        "Authorization":"Bearer " + c.token,
+        "X-GitHub-Api-Version":"2022-11-28",
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        message:"Actualizar niveles de la FabiGD Demonlist",
+        content,
+        sha:fileSha,
+        branch:c.branch
+      })
+    });
+
+    fileSha = result.content.sha;
+    status("✅ levels.json guardado en GitHub.\nNetlify debe procesar un despliegue para reflejar los cambios en la página pública. Si los despliegues siguen pausados, la web no se actualizará todavía.");
+  }catch(e){
+    status("❌ No se pudo publicar: " + e.message + "\nComprueba el nombre del repositorio, la rama, la ruta del archivo y los permisos del token.");
   }
-}
-
-function loadExample() {
-  if (levels.length && !confirm("Esto reemplazará los niveles actuales por el ejemplo. ¿Continuar?")) return;
-
-  levels = [
-    { name: "Loudly club", creator: "MaxynGD", showcase: "https://youtu.be/fa-XJ1KzXXc", verification: "", position: 1 },
-    { name: "Solaf", creator: "Dami02888", showcase: "https://youtu.be/BlkrliVFYBI", verification: "", position: 2 },
-    { name: "Speed of light", creator: "FabiGD2013", showcase: "https://youtu.be/Pb_YAMknIj4", verification: "", position: 3 },
-    { name: "When You find me", creator: "FabiGD2013", showcase: "https://youtu.be/m47dZB_kVew", verification: "", position: 4 },
-    { name: "GDcraft", creator: "ErickGD2004", showcase: "https://youtu.be/b6pRoE_UJZ8", verification: "", position: 5 }
-  ];
-
-  render();
-  $("status").textContent = "Ejemplo cargado. Puedes editarlo o importar tu levels.json real.";
 }
 
 render();
-resetForm();
 </script>
 </body>
-</html> 
+</html>
